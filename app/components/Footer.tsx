@@ -1,14 +1,32 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
     <footer className="mt-auto border-t border-border bg-surface">
+      {/* Disclaimer */}
+      <div className="border-b border-border bg-amber-50">
+        <div className="mx-auto max-w-6xl px-4 py-4">
+          <p className="text-xs leading-relaxed text-amber-800">
+            <strong>免責聲明 Disclaimer：</strong>
+            本網站所提供的所有資料、模擬試題及答案僅供學習及參考用途，並不構成任何專業意見或官方指引。本網站不保證內容的準確性、完整性或時效性，亦不對因使用本網站資料而導致的任何損失或損害承擔責任。考試內容、規則及要求以
+            <a href="https://www.eaa.org.hk" target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">地產代理監管局（EAA）</a>
+            及
+            <a href="https://www.peak.edu.hk" target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">高峰進修學院考試中心（PEAK）</a>
+            官方最新公佈為準。
+          </p>
+          <p className="mt-1.5 text-xs leading-relaxed text-amber-700">
+            All information, practice questions and answers on this website are for learning and reference purposes only. They do not constitute professional advice or official guidance. We do not guarantee the accuracy, completeness or timeliness of the content, and accept no liability for any loss or damage arising from the use of this website. Please refer to the official EAA and PEAK websites for the latest exam requirements.
+          </p>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <h3 className="mb-3 font-bold text-text">地產考牌攻略</h3>
+            <Image src="/logo.png" alt="HomeDash" width={120} height={28} className="mb-3 h-7 w-auto" />
             <p className="text-sm leading-relaxed text-text-light">
-              為有志投身香港地產行業的人士提供最全面的考牌資訊，助你順利通過資格考試。
+              由 HomeDash 提供，為有志投身香港地產行業的人士提供考牌資訊及模擬練習。
             </p>
           </div>
           <div>
@@ -25,13 +43,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/registration" className="text-text-light hover:text-primary">
-                  報名教學
+                <Link href="/practice" className="text-text-light hover:text-primary">
+                  模擬練習
                 </Link>
               </li>
               <li>
-                <Link href="/practice" className="text-text-light hover:text-primary">
-                  模擬練習
+                <Link href="/registration" className="text-text-light hover:text-primary">
+                  報名教學
                 </Link>
               </li>
               <li>
@@ -89,11 +107,27 @@ export default function Footer() {
                   高峰進修學院考試中心 (PEAK)
                 </a>
               </li>
+              <li>
+                <a
+                  href="https://homedash.hk"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-text-light hover:text-primary"
+                >
+                  HomeDash 家速
+                </a>
+              </li>
             </ul>
           </div>
         </div>
         <div className="mt-8 border-t border-border pt-6 text-center text-xs text-text-light">
-          <p>&copy; {new Date().getFullYear()} 地產考牌攻略。本網站僅供參考，一切以官方公佈為準。</p>
+          <p>
+            &copy; {new Date().getFullYear()}{" "}
+            <a href="https://homedash.hk" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
+              HomeDash 家速
+            </a>
+            。本網站僅供學習參考，一切以官方公佈為準。
+          </p>
         </div>
       </div>
     </footer>

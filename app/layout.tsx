@@ -9,15 +9,15 @@ const SITE_URL = "https://estate-exam.hk";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "香港地產代理考試攻略 | 考牌資訊一站式指南",
-    template: "%s | 香港地產代理考試攻略",
+    default: "香港地產代理考試攻略 | HomeDash 考牌一站式指南",
+    template: "%s | HomeDash 考牌攻略",
   },
   description:
     "香港地產代理考試一站式指南：涵蓋 EAQE 及 SQE 資格考試的考試內容、報名流程及常見問題，助你順利取得地產牌照。",
   openGraph: {
     type: "website",
     locale: "zh_HK",
-    siteName: "地產考牌攻略",
+    siteName: "HomeDash 考牌攻略",
     title: {
       default: "香港地產代理考試攻略",
       template: "%s | 地產考牌攻略",

@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useLanguage } from "../context/LanguageContext";
 
 const navLinks = [
-  { href: "/eaqe", label_cn: "EAQE 地產代理考試", label_en: "EAQE Exam" },
-  { href: "/sqe", label_cn: "SQE 營業員考試", label_en: "SQE Exam" },
+  { href: "/eaqe", label_cn: "EAQE 考試", label_en: "EAQE Exam" },
+  { href: "/sqe", label_cn: "SQE 考試", label_en: "SQE Exam" },
   { href: "/practice", label_cn: "模擬練習", label_en: "Practice" },
   { href: "/registration", label_cn: "報名教學", label_en: "Registration" },
   { href: "/faq", label_cn: "常見問題", label_en: "FAQ" },
@@ -18,9 +19,10 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-white/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="text-lg font-bold text-primary">
-          {language === "cn" ? "地產考牌攻略" : "HK Estate Exam"}
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2">
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/logo.png" alt="HomeDash" width={120} height={28} className="h-7 w-auto" />
+          <span className="hidden text-xs font-medium text-text-light sm:inline">考牌攻略</span>
         </Link>
 
         {/* Desktop nav */}
