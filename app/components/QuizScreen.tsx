@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
-import type { Question, Language, QuizMode, UserAnswer } from "../types";
+import { useState, useRef, useCallback, useEffect } from "react";
+import type { Question, Language, QuizMode, UserAnswer, ExamSimConfig } from "../types";
 
 interface Props {
   questions: Question[];
@@ -9,6 +9,8 @@ interface Props {
   mode: QuizMode;
   onComplete: (answers: UserAnswer[]) => void;
   onExit: () => void;
+  examSimConfig?: ExamSimConfig;
+  partBoundaries?: number[];
 }
 
 const t = {
@@ -52,7 +54,7 @@ const t = {
   },
 };
 
-export function QuizScreen({ questions, language, mode, onComplete, onExit }: Props) {
+export function QuizScreen({ questions, language, mode, onComplete, onExit, examSimConfig, partBoundaries }: Props) {
   const l = t[language];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Map<string, string>>(new Map());
@@ -60,6 +62,43 @@ export function QuizScreen({ questions, language, mode, onComplete, onExit }: Pr
   const [submittedQuestions, setSubmittedQuestions] = useState<Set<string>>(new Set());
   const questionStartTime = useRef(Date.now());
   const timesSpent = useRef<Map<string, number>>(new Map());
+
+  // Exam timer
+  const examEndTime = useRef(examSimConfig ? Date.now() + examSimConfig.totalTimeSeconds * 1000 : 0);
+  const [timeRemaining, setTimeRemaining] = useState(examSimConfig?.totalTimeSeconds || 0);
+
+  useEffect(() => {
+    if (mode !== "exam" || !examSimConfig) return;
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, Math.floor((examEndTime.current - Date.now()) / 1000));
+      setTimeRemaining(remaining);
+      if (remaining <= 0) {
+        clearInterval(interval);
+        finishTest();
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, examSimConfig]);
+
+  // Determine which part the current question belongs to
+  const getCurrentPart = () => {
+    if (!partBoundaries || !examSimConfig) return null;
+    let offset = 0;
+    for (let i = 0; i < examSimConfig.parts.length; i++) {
+      const end = offset + examSimConfig.parts[i].questionCount;
+      if (currentIndex < end) return { index: i, config: examSimConfig.parts[i], start: offset, end };
+      offset = end;
+    }
+    return null;
+  };
+
+  const formatTime = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
 
   const question = questions[currentIndex];
   const selectedAnswer = answers.get(question.id) || "";
@@ -151,8 +190,30 @@ export function QuizScreen({ questions, language, mode, onComplete, onExit }: Pr
   const options = getOptions(question);
   const optionLetters = Object.keys(options).sort();
 
+  const currentPart = getCurrentPart();
+
   return (
     <div className="space-y-4">
+      {/* Exam Timer */}
+      {mode === "exam" && examSimConfig && (
+        <div className={`flex items-center justify-between rounded-lg px-4 py-2 text-sm font-bold ${
+          timeRemaining <= 300 ? "bg-red-100 text-red-700" : timeRemaining <= 600 ? "bg-amber-100 text-amber-700" : "bg-surface text-text"
+        }`}>
+          <span>{language === "cn" ? examSimConfig.label_cn : examSimConfig.label_en}</span>
+          <span className="font-mono text-lg">{formatTime(timeRemaining)}</span>
+        </div>
+      )}
+
+      {/* Part Header (Exam mode) */}
+      {mode === "exam" && currentPart && (
+        <div className="rounded-lg bg-primary/10 px-4 py-2 text-center text-sm font-bold text-primary">
+          {language === "cn" ? currentPart.config.name_cn : currentPart.config.name_en}
+          <span className="ml-2 font-normal text-text-light">
+            ({currentPart.config.questionCount} {language === "cn" ? "題" : "Qs"}, {currentPart.config.totalMarks} {language === "cn" ? "分" : "marks"})
+          </span>
+        </div>
+      )}
+
       {/* Top Bar */}
       <div className="flex items-center justify-between">
         <button
