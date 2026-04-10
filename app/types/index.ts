@@ -8,6 +8,8 @@ export interface Question {
   options_cn: Record<string, string>;
   correctAnswer: string;
   explanation_en: string;
+  caseStudyGroup?: string;
+  caseStudyContext?: string;
   explanation_cn: string;
   source?: string;
   topic?: string;

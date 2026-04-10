@@ -30,9 +30,53 @@ export default function PracticePage() {
   const filtered = examFilter === "all" ? allQuestions : examFilter === "EAQE" ? eaqePool : sqePool;
   const available = filtered.length;
 
+  // Shuffle questions while keeping case study groups together
+  function shuffleWithGroups(pool: Question[], count: number): Question[] {
+    // Separate into standalone and case study groups
+    const standalone: Question[] = [];
+    const groupMap = new Map<string, Question[]>();
+
+    for (const q of pool) {
+      const grp = q.caseStudyGroup;
+      if (grp) {
+        if (!groupMap.has(grp)) groupMap.set(grp, []);
+        groupMap.get(grp)!.push(q);
+      } else {
+        standalone.push(q);
+      }
+    }
+
+    // Sort questions within each group by questionNumber to keep order
+    for (const [, qs] of groupMap) {
+      qs.sort((a, b) => a.questionNumber - b.questionNumber);
+    }
+
+    // Build shuffled list: treat each group as one "item", shuffle items
+    type Item = { type: "single"; q: Question } | { type: "group"; qs: Question[] };
+    const items: Item[] = [
+      ...standalone.map((q) => ({ type: "single" as const, q })),
+      ...[...groupMap.values()].map((qs) => ({ type: "group" as const, qs })),
+    ];
+    items.sort(() => Math.random() - 0.5);
+
+    // Flatten and take up to count
+    const result: Question[] = [];
+    for (const item of items) {
+      if (result.length >= count) break;
+      if (item.type === "single") {
+        result.push(item.q);
+      } else {
+        // Add entire group (don't split)
+        for (const q of item.qs) {
+          result.push(q);
+        }
+      }
+    }
+    return result.slice(0, count);
+  }
+
   function startQuiz() {
-    const shuffled = [...filtered].sort(() => Math.random() - 0.5);
-    setQuizQuestions(shuffled.slice(0, Math.min(questionCount, shuffled.length)));
+    setQuizQuestions(shuffleWithGroups(filtered, questionCount));
     setExamSimConfig(null);
     setScreen("quiz");
   }
@@ -40,9 +84,8 @@ export default function PracticePage() {
   function startExamSim(examType: "EAQE" | "SQE") {
     const config = examType === "EAQE" ? EAQE_CONFIG : SQE_CONFIG;
     const pool = examType === "EAQE" ? eaqePool : sqePool;
-    const shuffled = [...pool].sort(() => Math.random() - 0.5);
     const totalNeeded = config.parts.reduce((s, p) => s + p.questionCount, 0);
-    const selected = shuffled.slice(0, Math.min(totalNeeded, shuffled.length));
+    const selected = shuffleWithGroups(pool, totalNeeded);
 
     let cum = 0;
     const boundaries = config.parts.map((p) => { cum += p.questionCount; return cum; });

@@ -243,12 +243,40 @@ export function QuizScreen({ questions, language, mode, onComplete, onExit, exam
         />
       </div>
 
+      {/* Case Study Context */}
+      {question.caseStudyContext && question.caseStudyGroup && (
+        // Show context only for first question in the group or when jumping to a group question
+        (() => {
+          const isFirstInGroup = currentIndex === 0 || questions[currentIndex - 1]?.caseStudyGroup !== question.caseStudyGroup;
+          if (!isFirstInGroup) return null;
+          const groupCount = questions.filter((q) => q.caseStudyGroup === question.caseStudyGroup).length;
+          return (
+            <div className="rounded-xl border-2 border-accent/30 bg-amber-50 p-5">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="text-lg">📋</span>
+                <span className="text-sm font-bold text-accent-dark">
+                  {language === "cn" ? `個案分析 (${groupCount} 題)` : `Case Study (${groupCount} questions)`}
+                </span>
+              </div>
+              <p className="text-sm leading-relaxed text-text-light whitespace-pre-line">
+                {question.caseStudyContext}
+              </p>
+            </div>
+          );
+        })()
+      )}
+
       {/* Question Card */}
       <div className="bg-white rounded-xl shadow-sm border border-border p-6">
         <div className="mb-1 flex items-center gap-2">
           <span className="text-xs font-medium text-primary uppercase tracking-wide">
             {question.examType} #{question.questionNumber}
           </span>
+          {question.caseStudyGroup && (
+            <span className="text-xs text-accent-dark bg-accent/10 px-1.5 py-0.5 rounded font-medium">
+              {language === "cn" ? "個案題" : "Case Study"}
+            </span>
+          )}
           {isQuestionFallback(question) && (
             <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
               English
