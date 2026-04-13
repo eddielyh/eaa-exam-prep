@@ -243,27 +243,24 @@ export function QuizScreen({ questions, language, mode, onComplete, onExit, exam
         />
       </div>
 
-      {/* Case Study Context */}
+      {/* Case Study Context — shown on every question in the group */}
       {question.caseStudyContext && question.caseStudyGroup && (
-        // Show context only for first question in the group or when jumping to a group question
-        (() => {
-          const isFirstInGroup = currentIndex === 0 || questions[currentIndex - 1]?.caseStudyGroup !== question.caseStudyGroup;
-          if (!isFirstInGroup) return null;
-          const groupCount = questions.filter((q) => q.caseStudyGroup === question.caseStudyGroup).length;
-          return (
-            <div className="rounded-xl border-2 border-accent/30 bg-amber-50 p-5">
-              <div className="mb-2 flex items-center gap-2">
-                <span className="text-lg">📋</span>
-                <span className="text-sm font-bold text-accent-dark">
-                  {language === "cn" ? `個案分析 (${groupCount} 題)` : `Case Study (${groupCount} questions)`}
-                </span>
-              </div>
-              <p className="text-sm leading-relaxed text-text-light whitespace-pre-line">
-                {question.caseStudyContext}
-              </p>
-            </div>
-          );
-        })()
+        <details className="rounded-xl border-2 border-accent/30 bg-amber-50" open>
+          <summary className="flex cursor-pointer items-center gap-2 px-5 py-3">
+            <span className="text-lg">📋</span>
+            <span className="text-sm font-bold text-accent-dark">
+              {language === "cn" ? "個案分析" : "Case Study"}
+            </span>
+            <span className="ml-auto text-xs text-text-light">
+              {language === "cn" ? "點擊收合/展開" : "click to collapse/expand"}
+            </span>
+          </summary>
+          <div className="border-t border-accent/20 px-5 pb-4 pt-3">
+            <p className="text-sm leading-relaxed text-text-light whitespace-pre-line">
+              {question.caseStudyContext}
+            </p>
+          </div>
+        </details>
       )}
 
       {/* Question Card */}
